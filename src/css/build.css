@@ -37,7 +37,7 @@ canvas.fade-out {
   height: 120px;
   fill: black;
   z-index: 1;
-  opacity: 1;
+  opacity: 0;
   transition: opacity 0.5516s;
 }
 
