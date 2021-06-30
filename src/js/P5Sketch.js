@@ -4,6 +4,7 @@ import './globals';
 import "p5/lib/addons/p5.sound";
 import * as p5 from "p5";
 import audio from '../audio/waves-no-1.mp3'
+import cueSet1 from "./cueSet1.js";
 
 const P5Sketch = () => {
 
@@ -25,35 +26,54 @@ const P5Sketch = () => {
 
         p5.previousBeat = 0;
 
-        p5.createParticle = false;
+        p5.cueSet1Completed = [];
+        
+        p5.circleSize = 0;
 
-        p5.particlesArray = [];
+        p5.circleSizeDivider = 64;
+
+        p5.preload = () => {
+            p5.song = p5.loadSound(audio);
+        }
 
         p5.setup = () => {
-            p5.song = p5.loadSound(audio);
             p5.colorMode(p5.HSB, 360, 100, 100, 100);
             p5.canvas = p5.createCanvas(p5.canvasWidth, p5.canvasHeight); 
-            //p5.background(0,0,94);
+            p5.circleSize = p5.width / 48;
             p5.smooth();
 
             //p5.canvas = p5.createCanvas(600, 600);
             p5.noFill();
             p5.strokeWeight(2);
 
+            for (let i = 0; i < cueSet1.length; i++) {
+                let vars = {
+                    currentCue: i + 1,
+                    duration: cueSet1[i].duration,
+                    midi: cueSet1[i].midi,
+                    time: cueSet1[i].time,
+                };
+                p5.song.addCue(cueSet1[i].time, p5.executeCueSet1, vars);
+            }
+
+        };
+
+        p5.executeCueSet1 = (vars) => {
+            const currentCue = vars.currentCue;
+            if (!p5.cueSet1Completed.includes(currentCue)) {
+                p5.cueSet1Completed.push(currentCue);
+                p5.clear();
+                p5.circleSizeDivider = p5.circleSizeDivider / 2;
+            }
         };
 
         p5.draw = () => {
             let currentBeat = p5.getSongBeat();
-            // if (p5.song._lastPos > 0 && currentBar >= 0 && p5.song.isPlaying()) {
-
-
-            // }
             if (p5.song.isPlaying()) {
                 p5.background(10, 1); // translucent background (creates trails)
                 let hue = 0;
-                let circleSize = 180 - (p5.time * 10);
-                circleSize = circleSize > 30 ? circleSize : 30;
-                circleSize = 45 + p5.time;
+                let circleSize = p5.circleSize;
+
 
                 // make a x and y grid of ellipses
                 for (let x = 0; x <= p5.canvasWidth; x = x + circleSize) {
@@ -70,17 +90,14 @@ const P5Sketch = () => {
                         // // each particle moves in a circle
                         const myX = x + 20 * p5.cos(2 * p5.PI * p5.time + angle);
                         const myY = y + 20 * p5.sin(2 * p5.PI * p5.time + angle);
-                        p5.ellipse(myX, myY, circleSize/3); // draw particle
+                        p5.ellipse(myX, myY, circleSize / p5.circleSizeDivider); // draw particle
                     }
                 }
 
-                if (currentBeat != p5.previousBeat){
+                if (currentBeat !== p5.previousBeat){
                     p5.previousBeat = currentBeat;
                     p5.time = p5.time + (0.225 / 8); // update time
-                    console.log('// update time', p5.time);
-                    console.log('// lsast', p5.song._lastPos);
                 }
-                
             }
         };
 
