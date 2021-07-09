@@ -3,7 +3,7 @@ import PlayIcon from './PlayIcon.js';
 import './globals';
 import "p5/lib/addons/p5.sound";
 import * as p5 from "p5";
-import audio from '../audio/waves-no-1.mp3'
+import audio from '../audio/waves-no-1.ogg'
 import cueSet1 from "./cueSet1.js";
 
 const P5Sketch = () => {
