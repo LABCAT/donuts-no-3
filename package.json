@@ -1,6 +1,6 @@
 {
-  "name": "short-stories",
-  "version": "0.1.0",
+  "name": "donuts-no-3",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",

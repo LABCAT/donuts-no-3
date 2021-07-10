@@ -3,7 +3,7 @@ import PlayIcon from './PlayIcon.js';
 import './globals';
 import "p5/lib/addons/p5.sound";
 import * as p5 from "p5";
-import audio from '../audio/waves-no-1.ogg'
+import audio from '../audio/donuts-no-3.ogg'
 import cueSet1 from "./cueSet1.js";
 
 const P5Sketch = () => {
@@ -30,16 +30,21 @@ const P5Sketch = () => {
         
         p5.circleSize = 0;
 
-        p5.circleSizeDivider = 64;
+        p5.circleSizeDivider = 1;
+
+        p5.hueIncrementor = 5;
+
+        p5.hueIncrementorValues = [0, 5, 10, 15, 15, 10, 5];
 
         p5.preload = () => {
             p5.song = p5.loadSound(audio);
         }
 
         p5.setup = () => {
+            p5.frameRate(30);
             p5.colorMode(p5.HSB, 360, 100, 100, 100);
             p5.canvas = p5.createCanvas(p5.canvasWidth, p5.canvasHeight); 
-            p5.circleSize = p5.width / 48;
+            p5.circleSize = p5.width / 16;
             p5.smooth();
 
             //p5.canvas = p5.createCanvas(600, 600);
@@ -62,8 +67,9 @@ const P5Sketch = () => {
             const currentCue = vars.currentCue;
             if (!p5.cueSet1Completed.includes(currentCue)) {
                 p5.cueSet1Completed.push(currentCue);
+                p5.hueIncrementor = p5.hueIncrementorValues[currentCue];
+                p5.circleSizeDivider = currentCue > 3 ? p5.circleSizeDivider / 2 : p5.circleSizeDivider * 2;
                 p5.clear();
-                p5.circleSizeDivider = p5.circleSizeDivider / 2;
             }
         };
 
@@ -72,13 +78,12 @@ const P5Sketch = () => {
             if (p5.song.isPlaying()) {
                 p5.background(10, 1); // translucent background (creates trails)
                 let hue = 0;
-                let circleSize = p5.circleSize;
-
 
                 // make a x and y grid of ellipses
-                for (let x = 0; x <= p5.canvasWidth; x = x + circleSize) {
-                    for (let y = 0; y <= p5.canvasHeight; y = y + circleSize) {
-                        hue = (y % 24) * 15;
+                for (let x = 0; x <= p5.canvasWidth; x = x + p5.circleSize) {
+                    for (let y = 0; y <= p5.canvasHeight; y = y + p5.circleSize) {
+                        hue = hue > 360 ? 0 : hue + p5.hueIncrementor;
+
                         p5.stroke(hue, 100, 100, 50);
                         // starting point of each circle depends on mouse position
                         const xAngle = p5.map(p5.canvasWidth, 0, p5.canvasWidth, -4 * p5.PI, 4 * p5.PI, true);
@@ -90,7 +95,7 @@ const P5Sketch = () => {
                         // // each particle moves in a circle
                         const myX = x + 20 * p5.cos(2 * p5.PI * p5.time + angle);
                         const myY = y + 20 * p5.sin(2 * p5.PI * p5.time + angle);
-                        p5.ellipse(myX, myY, circleSize / p5.circleSizeDivider); // draw particle
+                        p5.ellipse(myX, myY, p5.circleSize / p5.circleSizeDivider); // draw particle
                     }
                 }
 
@@ -128,11 +133,6 @@ const P5Sketch = () => {
                 p5.canvas.addClass('fade-in');
                 p5.song.play();
             }
-            p5.createParticle = true;
-        };
-
-        p5.mouseReleased = () => {
-            p5.createParticle = false;
         };
 
         p5.updateCanvasDimensions = () => {
